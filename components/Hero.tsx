@@ -14,11 +14,26 @@ const Hero: React.FC<HeroProps> = ({ onCtaClick }) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Validate form data
+    if (!formData.name || !formData.email || !formData.phone) {
+      alert('Veuillez remplir tous les champs du formulaire.');
+      return;
+    }
+
     const subject = encodeURIComponent('Demande de consultation - Crédit-Action');
     const body = encodeURIComponent(
       `Nom: ${formData.name}\nCourriel: ${formData.email}\nTéléphone: ${formData.phone}\n\nJe souhaite obtenir une consultation gratuite pour améliorer mon crédit.`
     );
-    window.location.href = `mailto:ameliorercredit@parcourriel.ca?subject=${subject}&body=${body}`;
+    const mailtoLink = `mailto:ameliorercredit@parcourriel.ca?subject=${subject}&body=${body}`;
+
+    // Open mailto link
+    window.location.href = mailtoLink;
+
+    // Show confirmation message
+    setTimeout(() => {
+      alert('Votre client de messagerie devrait s\'ouvrir. Si ce n\'est pas le cas, veuillez nous contacter directement à ameliorercredit@parcourriel.ca');
+    }, 500);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
