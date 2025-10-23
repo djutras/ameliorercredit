@@ -1,33 +1,16 @@
-
-import React, { useState } from 'react';
-import Header from './components/Header';
-import Hero from './components/Hero';
-import HowItWorks from './components/HowItWorks';
-import Services from './components/Services';
-import Testimonials from './components/Testimonials';
-import FinalCTA from './components/FinalCTA';
-import Footer from './components/Footer';
-import ContactModal from './components/ContactModal';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import HomePage from './components/HomePage';
+import ThankYou from './components/ThankYou';
 
 const App: React.FC = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const handleOpenModal = () => setIsModalOpen(true);
-  const handleCloseModal = () => setIsModalOpen(false);
-
   return (
-    <div className="bg-slate-50 min-h-screen font-sans">
-      <Header onCtaClick={handleOpenModal} />
-      <main>
-        <Hero onCtaClick={handleOpenModal} />
-        <Services />
-        <HowItWorks />
-        <Testimonials />
-        <FinalCTA onCtaClick={handleOpenModal} />
-      </main>
-      <Footer />
-      {isModalOpen && <ContactModal onClose={handleCloseModal} />}
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/merci" element={<ThankYou />} />
+      </Routes>
+    </Router>
   );
 };
 

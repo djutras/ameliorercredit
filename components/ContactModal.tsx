@@ -1,16 +1,21 @@
 
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 interface ContactModalProps {
   onClose: () => void;
 }
 
 const ContactModal: React.FC<ContactModalProps> = ({ onClose }) => {
+  const navigate = useNavigate();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
-  const [errors, setErrors] = useState({ name: false, email: false });
+  const [message, setMessage] = useState('');
+  const [errors, setErrors] = useState({ name: false, email: false, message: false });
   const [submitted, setSubmitted] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
   
   useEffect(() => {
     const handleEsc = (event: KeyboardEvent) => {
@@ -30,23 +35,49 @@ const ContactModal: React.FC<ContactModalProps> = ({ onClose }) => {
     const newErrors = {
       name: name.trim() === '',
       email: !/^\S+@\S+\.\S+$/.test(email),
+      message: message.trim() === '',
     };
     setErrors(newErrors);
-    return !newErrors.name && !newErrors.email;
+    return !newErrors.name && !newErrors.email && !newErrors.message;
   };
 
-  const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
+    setErrorMessage('');
+
     if (validate()) {
-      const subject = encodeURIComponent("Demande de Consultation Gratuite - Crédit-Action");
-      const body = encodeURIComponent(
-        `Bonjour,\n\nJe souhaite obtenir une consultation gratuite.\n\nVoici mes informations :\n\nNom: ${name}\nCourriel: ${email}\nTéléphone: ${phone}\n\nMerci.`
-      );
-      window.location.href = `mailto:info@opportunitesparcourriel.com?subject=${subject}&body=${body}`;
-      setSubmitted(true);
-      setTimeout(() => {
-        onClose();
-      }, 4000);
+      setIsLoading(true);
+
+      try {
+        const response = await fetch('/.netlify/functions/contact', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            name,
+            email,
+            phone,
+            message,
+          }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+          setSubmitted(true);
+          setTimeout(() => {
+            navigate('/merci');
+          }, 1000);
+        } else {
+          setErrorMessage(data.error || 'Une erreur est survenue. Veuillez réessayer.');
+        }
+      } catch (error) {
+        console.error('Error submitting form:', error);
+        setErrorMessage('Impossible de se connecter au serveur. Veuillez réessayer plus tard.');
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 
@@ -75,7 +106,7 @@ const ContactModal: React.FC<ContactModalProps> = ({ onClose }) => {
           <div className="text-center">
             <h2 className="text-2xl font-bold text-slate-800 mb-4">Merci !</h2>
             <p className="text-slate-600">
-              Nous avons lancé votre application de messagerie. Veuillez compléter et envoyer le courriel pour finaliser votre demande. Cette fenêtre se fermera automatiquement.
+              Votre message a été envoyé avec succès. Nous vous contacterons sous peu. Cette fenêtre se fermera automatiquement.
             </p>
           </div>
         ) : (
@@ -111,22 +142,43 @@ const ContactModal: React.FC<ContactModalProps> = ({ onClose }) => {
                 />
                 {errors.email && <p className="text-red-500 text-sm mt-1">Veuillez entrer une adresse courriel valide.</p>}
               </div>
-              <div className="mb-6">
+              <div className="mb-4">
                 <label htmlFor="phone" className="block text-slate-700 font-bold mb-2">Téléphone <span className="font-normal text-slate-500">(Optionnel)</span></label>
-                <input 
-                  type="tel" 
+                <input
+                  type="tel"
                   id="phone"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
                 />
               </div>
+              <div className="mb-6">
+                <label htmlFor="message" className="block text-slate-700 font-bold mb-2">Message</label>
+                <textarea
+                  id="message"
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  rows={4}
+                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 ${errors.message ? 'border-red-500' : 'border-slate-300'}`}
+                  required
+                  aria-required="true"
+                  aria-invalid={errors.message}
+                  placeholder="Décrivez brièvement votre situation..."
+                />
+                {errors.message && <p className="text-red-500 text-sm mt-1">Veuillez entrer un message.</p>}
+              </div>
+              {errorMessage && (
+                <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+                  {errorMessage}
+                </div>
+              )}
               <button
                 type="button"
                 onClick={handleSubmit}
-                className="w-full bg-red-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-red-700 transition-colors duration-300"
+                disabled={isLoading}
+                className="w-full bg-red-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-red-700 transition-colors duration-300 disabled:bg-slate-400 disabled:cursor-not-allowed"
               >
-                Envoyer ma demande
+                {isLoading ? 'Envoi en cours...' : 'Envoyer ma demande'}
               </button>
             </form>
           </>
