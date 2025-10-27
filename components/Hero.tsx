@@ -82,10 +82,10 @@ const Hero: React.FC<HeroProps> = ({ onCtaClick }) => {
           {/* Left side - Text content */}
           <div className="flex-1 text-center md:text-left">
             <h1 className="text-4xl md:text-6xl font-extrabold leading-tight mb-4">
-              Reprenez le Contrôle de Votre Crédit.
+              Réalisez vos projets plus facilement.
             </h1>
             <p className="text-lg md:text-2xl font-light mb-8">
-              Réalisez votre rêve d'acheter une maison en améliorant vos cotes Equifax et TransUnion.
+              Améliorer vos cotes Equifax et TransUnion. Pour retrouver votre liberté financière!
             </p>
             <button
               onClick={onCtaClick}
