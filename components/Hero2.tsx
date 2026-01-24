@@ -19,7 +19,7 @@ const creditChallenges = [
   { id: 'aucun', label: 'Aucun problème de crédit' },
 ];
 
-const Hero: React.FC<HeroProps> = ({ onCtaClick }) => {
+const Hero2: React.FC<HeroProps> = ({ onCtaClick }) => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: '',
@@ -226,4 +226,4 @@ const Hero: React.FC<HeroProps> = ({ onCtaClick }) => {
   );
 };
 
-export default Hero;
+export default Hero2;
