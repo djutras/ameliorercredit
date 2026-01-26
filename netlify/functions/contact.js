@@ -12,7 +12,7 @@ export async function handler(event) {
 
   try {
     // Parse request body
-    const { name, email, phone, message } = JSON.parse(event.body);
+    const { name, email, phone, message, creditScore } = JSON.parse(event.body);
 
     // Validate required fields
     if (!name || !email || !message) {
@@ -49,6 +49,7 @@ Nouveau message de contact:
 Nom: ${name}
 Email: ${email}
 Téléphone: ${phone || 'Non fourni'}
+Cote de crédit: ${creditScore || 'Non spécifié'}
 
 Message:
 ${message}
@@ -60,6 +61,7 @@ ${message}
             <p><strong>Nom:</strong> ${name}</p>
             <p><strong>Email:</strong> <a href="mailto:${email}">${email}</a></p>
             <p><strong>Téléphone:</strong> ${phone || 'Non fourni'}</p>
+            <p><strong>Cote de crédit:</strong> ${creditScore || 'Non spécifié'}</p>
             <p><strong>ID de soumission:</strong> #${submissionId}</p>
           </div>
           <div style="margin-top: 20px;">

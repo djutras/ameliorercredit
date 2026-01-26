@@ -19,13 +19,23 @@ const creditChallenges = [
   { id: 'aucun', label: 'Aucun problème de crédit' },
 ];
 
+const creditScores = [
+  { id: '', label: 'Sélectionnez votre cote' },
+  { id: 'below-560', label: '< 560' },
+  { id: '560-659', label: '560-659' },
+  { id: '660-724', label: '660-724' },
+  { id: '725-plus', label: '725+' },
+  { id: 'unknown', label: 'Je ne sais pas' },
+];
+
 const Hero: React.FC<HeroProps> = ({ onCtaClick }) => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     phone: '',
-    creditChallenge: ''
+    creditChallenge: '',
+    creditScore: ''
   });
   const [errors, setErrors] = useState({ name: false, email: false, phone: false });
   const [isLoading, setIsLoading] = useState(false);
@@ -51,6 +61,7 @@ const Hero: React.FC<HeroProps> = ({ onCtaClick }) => {
       setIsLoading(true);
 
       const selectedChallenge = creditChallenges.find(c => c.id === formData.creditChallenge)?.label || 'Non spécifié';
+      const selectedScore = creditScores.find(s => s.id === formData.creditScore)?.label || 'Non spécifié';
 
       try {
         const response = await fetch('/.netlify/functions/contact', {
@@ -63,7 +74,8 @@ const Hero: React.FC<HeroProps> = ({ onCtaClick }) => {
             email: formData.email,
             phone: formData.phone,
             creditChallenge: formData.creditChallenge,
-            message: `Demande de consultation via le formulaire Hero. Défi principal: ${selectedChallenge}`,
+            creditScore: formData.creditScore,
+            message: `Demande de consultation via le formulaire Hero. Défi principal: ${selectedChallenge}. Cote de crédit: ${selectedScore}`,
           }),
         });
 
@@ -117,11 +129,11 @@ const Hero: React.FC<HeroProps> = ({ onCtaClick }) => {
           {/* Right side - Form */}
           <div className="w-full md:w-96 bg-white/95 backdrop-blur-sm rounded-lg shadow-2xl p-8">
             <h2 className="text-2xl font-bold text-gray-800 mb-6">Demandez une consultation</h2>
-            <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+            <form onSubmit={handleSubmit} className="space-y-3" noValidate>
 
               {/* Dropdown question */}
               <div>
-                <label htmlFor="creditChallenge" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="creditChallenge" className="block text-sm font-medium text-gray-700 mb-1">
                   Quel est votre principal défi de crédit?
                 </label>
                 <select
@@ -129,7 +141,7 @@ const Hero: React.FC<HeroProps> = ({ onCtaClick }) => {
                   name="creditChallenge"
                   value={formData.creditChallenge}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent text-gray-900 bg-white"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent text-gray-900 bg-white"
                 >
                   {creditChallenges.map((challenge) => (
                     <option key={challenge.id} value={challenge.id}>
@@ -148,8 +160,28 @@ const Hero: React.FC<HeroProps> = ({ onCtaClick }) => {
                 )}
               </div>
 
+              {/* Credit score dropdown */}
               <div>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="creditScore" className="block text-sm font-medium text-gray-700 mb-1">
+                  Votre cote de crédit actuelle?
+                </label>
+                <select
+                  id="creditScore"
+                  name="creditScore"
+                  value={formData.creditScore}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent text-gray-900 bg-white"
+                >
+                  {creditScores.map((score) => (
+                    <option key={score.id} value={score.id}>
+                      {score.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
                   Nom complet
                 </label>
                 <input
@@ -159,7 +191,7 @@ const Hero: React.FC<HeroProps> = ({ onCtaClick }) => {
                   value={formData.name}
                   onChange={handleChange}
                   required
-                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent text-gray-900 ${errors.name ? 'border-red-500' : 'border-gray-300'}`}
+                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent text-gray-900 ${errors.name ? 'border-red-500' : 'border-gray-300'}`}
                   placeholder="Votre nom"
                   aria-required="true"
                   aria-invalid={errors.name}
@@ -168,7 +200,7 @@ const Hero: React.FC<HeroProps> = ({ onCtaClick }) => {
               </div>
 
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
                   Courriel
                 </label>
                 <input
@@ -178,7 +210,7 @@ const Hero: React.FC<HeroProps> = ({ onCtaClick }) => {
                   value={formData.email}
                   onChange={handleChange}
                   required
-                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent text-gray-900 ${errors.email ? 'border-red-500' : 'border-gray-300'}`}
+                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent text-gray-900 ${errors.email ? 'border-red-500' : 'border-gray-300'}`}
                   placeholder="votre@courriel.com"
                   aria-required="true"
                   aria-invalid={errors.email}
@@ -187,7 +219,7 @@ const Hero: React.FC<HeroProps> = ({ onCtaClick }) => {
               </div>
 
               <div>
-                <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
                   Numéro de téléphone
                 </label>
                 <input
@@ -197,7 +229,7 @@ const Hero: React.FC<HeroProps> = ({ onCtaClick }) => {
                   value={formData.phone}
                   onChange={handleChange}
                   required
-                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent text-gray-900 ${errors.phone ? 'border-red-500' : 'border-gray-300'}`}
+                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent text-gray-900 ${errors.phone ? 'border-red-500' : 'border-gray-300'}`}
                   placeholder="(514) 555-1234"
                   aria-required="true"
                   aria-invalid={errors.phone}
