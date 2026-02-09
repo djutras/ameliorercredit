@@ -41,8 +41,6 @@ const Hero: React.FC<HeroProps> = ({ onCtaClick }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
-  const showHealthyMessage = formData.creditChallenge === 'aucun';
-
   const validate = () => {
     const newErrors = {
       name: formData.name.trim() === '',
@@ -160,15 +158,6 @@ const Hero: React.FC<HeroProps> = ({ onCtaClick }) => {
                     </option>
                   ))}
                 </select>
-
-                {/* Message for healthy credit */}
-                {showHealthyMessage && (
-                  <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-lg">
-                    <p className="text-sm text-green-700">
-                      Votre dossier semble en bonne santé! Nos services s'adressent principalement aux personnes ayant des défis de crédit.
-                    </p>
-                  </div>
-                )}
               </div>
 
               {/* Credit score dropdown */}
