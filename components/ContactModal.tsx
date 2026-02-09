@@ -67,7 +67,11 @@ const ContactModal: React.FC<ContactModalProps> = ({ onClose }) => {
         if (response.ok && data.success) {
           setSubmitted(true);
           setTimeout(() => {
-            navigate('/merci');
+            navigate('/consultation', {
+              state: {
+                formData: { name, email, phone, message, source: 'modal' },
+              },
+            });
           }, 1000);
         } else {
           setErrorMessage(data.error || 'Une erreur est survenue. Veuillez réessayer.');

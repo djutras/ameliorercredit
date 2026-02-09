@@ -82,7 +82,18 @@ const Hero: React.FC<HeroProps> = ({ onCtaClick }) => {
         const data = await response.json();
 
         if (response.ok && data.success) {
-          navigate('/merci');
+          navigate('/consultation', {
+            state: {
+              formData: {
+                name: formData.name,
+                email: formData.email,
+                phone: formData.phone,
+                creditChallenge: selectedChallenge,
+                creditScore: selectedScore,
+                source: 'hero',
+              },
+            },
+          });
         } else {
           setErrorMessage(data.error || 'Une erreur est survenue. Veuillez réessayer.');
         }
