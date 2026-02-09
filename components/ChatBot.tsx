@@ -184,34 +184,51 @@ const ChatBot: React.FC<ChatBotProps> = ({ formData }) => {
   };
 
   return (
-    <div className="flex flex-col h-full max-w-2xl mx-auto">
+    <div className="flex flex-col h-full max-w-3xl mx-auto">
       {/* Messages area */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      <div className="flex-1 overflow-y-auto px-4 py-6 space-y-5">
         {messages.map((msg, i) => (
           <div
             key={i}
-            className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+            className={`flex items-start gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}
           >
+            {/* Avatar */}
+            {msg.role === 'assistant' ? (
+              <div className="flex-shrink-0 w-9 h-9 rounded-full bg-blue-700 flex items-center justify-center">
+                <span className="text-white text-xs font-bold">IA</span>
+              </div>
+            ) : (
+              <div className="flex-shrink-0 w-9 h-9 rounded-full bg-gray-700 flex items-center justify-center">
+                <span className="text-white text-xs font-bold">
+                  {formData.name?.charAt(0)?.toUpperCase() || 'V'}
+                </span>
+              </div>
+            )}
+
+            {/* Message bubble */}
             <div
-              className={`max-w-[80%] px-4 py-3 rounded-2xl ${
+              className={`max-w-[75%] ${
                 msg.role === 'user'
-                  ? 'bg-red-600 text-white rounded-br-md'
-                  : 'bg-blue-600 text-white rounded-bl-md'
-              }`}
+                  ? 'bg-gray-800 text-white'
+                  : 'bg-white text-gray-800 border border-gray-200 shadow-sm'
+              } px-5 py-3.5 rounded-2xl`}
             >
-              <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
+              <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.content}</p>
             </div>
           </div>
         ))}
 
         {/* Typing indicator */}
         {isLoading && (
-          <div className="flex justify-start">
-            <div className="bg-blue-600 text-white px-4 py-3 rounded-2xl rounded-bl-md">
+          <div className="flex items-start gap-3">
+            <div className="flex-shrink-0 w-9 h-9 rounded-full bg-blue-700 flex items-center justify-center">
+              <span className="text-white text-xs font-bold">IA</span>
+            </div>
+            <div className="bg-white border border-gray-200 shadow-sm px-5 py-3.5 rounded-2xl">
               <div className="flex space-x-1.5">
-                <div className="w-2 h-2 bg-white/70 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                <div className="w-2 h-2 bg-white/70 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                <div className="w-2 h-2 bg-white/70 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
               </div>
             </div>
           </div>
@@ -220,7 +237,7 @@ const ChatBot: React.FC<ChatBotProps> = ({ formData }) => {
         {/* Inactivity warning */}
         {showWarning && !isEnded && (
           <div className="text-center">
-            <p className="text-sm text-amber-600 bg-amber-50 inline-block px-4 py-2 rounded-full">
+            <p className="text-sm text-amber-700 bg-amber-50 border border-amber-200 inline-block px-4 py-2 rounded-lg">
               Êtes-vous toujours là? La consultation se terminera bientôt par inactivité.
             </p>
           </div>
@@ -229,7 +246,7 @@ const ChatBot: React.FC<ChatBotProps> = ({ formData }) => {
         {/* End message */}
         {isEnded && (
           <div className="text-center">
-            <p className="text-sm text-gray-500 bg-gray-100 inline-block px-4 py-2 rounded-full">
+            <p className="text-sm text-gray-500 bg-gray-50 border border-gray-200 inline-block px-4 py-2 rounded-lg">
               La consultation est terminée. Redirection en cours...
             </p>
           </div>
@@ -240,7 +257,7 @@ const ChatBot: React.FC<ChatBotProps> = ({ formData }) => {
 
       {/* Input area */}
       <div className="border-t border-gray-200 p-4 bg-white">
-        <div className="flex gap-2">
+        <div className="flex gap-3">
           <input
             type="text"
             value={inputValue}
@@ -248,12 +265,12 @@ const ChatBot: React.FC<ChatBotProps> = ({ formData }) => {
             onKeyDown={handleKeyDown}
             disabled={isLoading || isEnded}
             placeholder={isEnded ? 'Consultation terminée' : 'Écrivez votre message...'}
-            className="flex-1 px-4 py-3 border border-gray-300 rounded-full focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 disabled:bg-gray-100"
+            className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent text-gray-900 disabled:bg-gray-50 text-sm"
           />
           <button
             onClick={handleSend}
             disabled={isLoading || isEnded || !inputValue.trim()}
-            className="px-5 py-3 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
+            className="px-4 py-3 bg-blue-700 text-white rounded-lg hover:bg-blue-800 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
               <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
@@ -265,7 +282,7 @@ const ChatBot: React.FC<ChatBotProps> = ({ formData }) => {
         {!isEnded && messages.length > 0 && (
           <button
             onClick={() => endConsultation('manual')}
-            className="mt-3 w-full text-sm text-gray-500 hover:text-red-600 transition-colors py-2"
+            className="mt-3 w-full text-xs text-gray-400 hover:text-red-600 transition-colors py-2 tracking-wide uppercase"
           >
             Terminer la consultation
           </button>
