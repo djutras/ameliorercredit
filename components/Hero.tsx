@@ -6,36 +6,12 @@ interface HeroProps {
   onCtaClick: () => void;
 }
 
-const creditChallenges = [
-  { id: '', label: 'Sélectionnez votre situation...' },
-  { id: 'refus', label: 'Refus de crédit ou prêt' },
-  { id: 'taux', label: "Taux d'intérêt trop élevé" },
-  { id: 'carte', label: 'Difficulté à obtenir une carte de crédit' },
-  { id: 'erreurs', label: 'Erreurs sur mon dossier de crédit' },
-  { id: 'retards', label: 'Retards de paiement ou recouvrement' },
-  { id: 'faillite', label: 'Faillite ou proposition de consommateur' },
-  { id: 'collections', label: 'Appels de collections' },
-  { id: 'ameliorer', label: 'Je veux améliorer ma cote de crédit' },
-  { id: 'aucun', label: 'Aucun problème de crédit' },
-];
-
-const creditScores = [
-  { id: '', label: 'Sélectionnez votre cote' },
-  { id: 'below-560', label: '< 560' },
-  { id: '560-659', label: '560-659' },
-  { id: '660-724', label: '660-724' },
-  { id: '725-plus', label: '725+' },
-  { id: 'unknown', label: 'Je ne sais pas' },
-];
-
 const Hero: React.FC<HeroProps> = ({ onCtaClick }) => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    phone: '',
-    creditChallenge: '',
-    creditScore: ''
+    phone: ''
   });
   const [errors, setErrors] = useState({ name: false, email: false, phone: false });
   const [isLoading, setIsLoading] = useState(false);
@@ -58,9 +34,6 @@ const Hero: React.FC<HeroProps> = ({ onCtaClick }) => {
     if (validate()) {
       setIsLoading(true);
 
-      const selectedChallenge = creditChallenges.find(c => c.id === formData.creditChallenge)?.label || 'Non spécifié';
-      const selectedScore = creditScores.find(s => s.id === formData.creditScore)?.label || 'Non spécifié';
-
       try {
         const response = await fetch('/.netlify/functions/contact', {
           method: 'POST',
@@ -71,9 +44,7 @@ const Hero: React.FC<HeroProps> = ({ onCtaClick }) => {
             name: formData.name,
             email: formData.email,
             phone: formData.phone,
-            creditChallenge: formData.creditChallenge,
-            creditScore: formData.creditScore,
-            message: `Demande de consultation via le formulaire Hero. Défi principal: ${selectedChallenge}. Cote de crédit: ${selectedScore}`,
+            message: `Demande de consultation via le formulaire Hero.`,
           }),
         });
 
@@ -86,8 +57,6 @@ const Hero: React.FC<HeroProps> = ({ onCtaClick }) => {
                 name: formData.name,
                 email: formData.email,
                 phone: formData.phone,
-                creditChallenge: selectedChallenge,
-                creditScore: selectedScore,
                 source: 'hero',
               },
             },
@@ -139,47 +108,6 @@ const Hero: React.FC<HeroProps> = ({ onCtaClick }) => {
           <div className="w-full md:w-96 bg-white/95 backdrop-blur-sm rounded-lg shadow-2xl p-8">
             <h2 className="text-2xl font-bold text-gray-800 mb-6">Demandez une consultation</h2>
             <form onSubmit={handleSubmit} className="space-y-3" noValidate>
-
-              {/* Dropdown question */}
-              <div>
-                <label htmlFor="creditChallenge" className="block text-sm font-medium text-gray-700 mb-1">
-                  Quel est votre principal défi de crédit?
-                </label>
-                <select
-                  id="creditChallenge"
-                  name="creditChallenge"
-                  value={formData.creditChallenge}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent text-gray-900 bg-white"
-                >
-                  {creditChallenges.map((challenge) => (
-                    <option key={challenge.id} value={challenge.id}>
-                      {challenge.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Credit score dropdown */}
-              <div>
-                <label htmlFor="creditScore" className="block text-sm font-medium text-gray-700 mb-1">
-                  Votre cote de crédit actuelle?
-                </label>
-                <select
-                  id="creditScore"
-                  name="creditScore"
-                  value={formData.creditScore}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent text-gray-900 bg-white"
-                >
-                  {creditScores.map((score) => (
-                    <option key={score.id} value={score.id}>
-                      {score.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
               <div>
                 <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
                   Nom complet
